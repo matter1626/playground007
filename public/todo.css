@@ -1,0 +1,152 @@
+*{
+    background-color: cadetblue;
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+}
+
+.holder{
+    width: 600px;
+    /* border: 1px solid blue; */
+    position: relative;
+    height: 500px;
+}
+
+nav{
+    display: flex;
+}
+
+nav div{
+    width: 100px;
+    height: 100px;
+    /* border: 1px solid black; */
+    margin-right: 15px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+nav div h2{
+    position: absolute;
+    bottom: -15px;
+    background: none;
+    border-top: 2px solid black;
+    width: 100%;
+    text-align: center;
+    display: none;
+}
+
+nav div h2 a:active{
+    color: red;
+    cursor: pointer;
+}
+
+.yesterday{
+    background-image: url(yesterday.png);
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position:center top;
+}
+nav .yesterday:hover{
+    background-image: url(yesterday0a.png);
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position:center top;
+    transform: .8s ease-in-out;
+}
+.today{
+    background-image: url(today.png);
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position:center top;
+}
+nav .today:hover{
+    background-image: url(today0a.png);
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position:center top;
+}
+
+.tomorrow{
+    background-image: url(tomorrow.png);
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position:center top;
+}
+nav .tomorrow:hover{
+    background-image: url(tomorrow0a.png);
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position:center top;
+}
+
+/* nav div:hover{
+    background-position: center 10%;
+} */
+
+nav div:hover > h2{
+    display: block;
+}
+
+.tasks{
+    height: 40px;
+    width: 100%;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+}
+
+.tasks .item{
+    width: 80%;
+    height: 100%;
+    border-top: 1px solid cadetblue;
+    display: flex;
+    align-items: center;
+    background: black;
+    color: white;
+}
+
+.tasks .date{
+    width: 20%;
+    height: 100%;
+    border-top: 1px solid cadetblue;
+    background: white;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form{
+    position: absolute;
+    height: 50px;
+    bottom: 0px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    /* border: 1px solid black; */
+}
+
+input{
+    width: 220px;
+    padding: 0px;
+    margin: 0;
+    border: none;
+    height: 50px;
+    border: 1px solid black;
+}
+
+.btn{
+    width: 127px;
+    border: 1px solid black;
+    height: 50px;
+    background: white;
+    position: absolute;
+    right: 0px;
+}

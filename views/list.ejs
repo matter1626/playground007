@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>to do</title>
+    <link rel="stylesheet" href="todo.css">
+    <script>
+    function myFunction(){
+        alert('hahaha');
+    }
+    </script>
+</head>
+<body>
+    <div class="holder">
+
+        <nav>
+            <div class="yesterday"><h2><a>yesterday</a></h2></div>
+            <div class="today"><h2><a>today</a></h2></div>
+            <div class="tomorrow"><h2><a>tomorrow</a></h2></div>
+            <div class="future"><h2><a>date</a></h2></div>
+        </nav>
+
+        <% tasks.forEach(task => { %>
+            
+        <div class="tasks">
+            <div class="item"><%= task.task %></div>
+            <div class="date"><%= task.date.getDate() %>-<%= task.date.getMonth()+1 %></div>
+        
+        <form method="POST" action="/<%= task.id %>?_method=DELETE">
+            <button class="tasks" type="submit">del</button>
+        </form>
+
+        <a href=" <%= task.id %>">ID</a>
+        
+    </div>
+
+        <% }) %>
+        
+        <div class="form">
+            <form method='post' action='/'>
+                <input name='task' placeholder="next task"/>
+                <input name='date' type="date"/>
+                <input class="btn" placeholder="ha ha ha"type="submit" value="Submit">
+            </form>
+        </div>
+
+    </div>
+</body>
+</html>
