@@ -1,23 +1,97 @@
+const config = require('config');
 const express = require('express');
 const mongoose = require('mongoose');
 const ejs = require('ejs');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const _ = require('lodash');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
+app.set('view engine','ejs');
 app.use(express.static("public"));
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended:true}))
-app.set('view engine','ejs');
 app.use(methodOverride('_method'))
+app.use(cookieParser());
+
+app.use('/protected', (req,res,next) => {
+    console.log('protected');
+    next();
+})
 
 mongoose.connect('mongodb://localhost/todo', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB...'))
   .catch(err => console.error('Could not connect to MongoDB...', err));
 
+console.log(config.get('name'));
+console.log(config.get('jwtprivatekey'))
+
+//login
+app.get('/login', (req,res) =>{
+    res.render('login')
+})
+
+app.post('/login', async (req,res)=>{
+    let user = await User.find({username:req.body.username});
+    if(!user[0]) res.send('user does not exist');
+
+    const check = await bcrypt.compare(req.body.password, user[0].password);
+    if(check == false) res.send('password is incorrect');
+    
+    const payload = _.pick(user[0], ['username', 'acc']);
+    const token = jwt.sign(payload,'privatekey');
+    res.cookie('x-token', token);
+    res.redirect('/home');
+})
+
+//write task
+app.get('/home',(req,res) => {
+    let token = req.cookies['x-token'];
+    let decode = jwt.verify(token,'privatekey');
+    console.log(decode.acc);
+
+    if(decode.acc ==='admin'){
+            Task.find({}, function(err, tasks){
+        res.render('list',{
+        tasks:tasks
+    });
+    })
+    }else{
+        res.status(400).send('access denied');
+    }
+})
+
+//show tasks
+app.post('/home', async (req,res) => {
+    let token = req.cookies['x-token'];
+    let decode = jwt.verify(token,config.get('jwtprivatekey'));
+    console.log(decode);
+    if(!decode.acc==='admin') return res.status(400); 
+    let alpha = new Task({
+        task: req.body.task,
+        date: req.body.date
+    })
+    alpha = await alpha.save();
+    console.log(alpha);
+    res.redirect('/home')
+})
+
+//delete task
+app.delete('/home/:id', async (req,res)=>{
+    // let obs = await Task.find({task:req.params.id})
+    // console.log(obs);
+    let obs = await Task.findByIdAndDelete(req.params.id);
+    console.log(obs);
+    res.redirect('/home');
+})
+
+//create task
 const todoSchema = new mongoose.Schema({
-    task:String,
+    task:{type:String, required:true},
     date:{type:Date, default:Date.now}
 })
 
@@ -32,69 +106,29 @@ async function newTask(task,date){
     console.log(alpha);
 }
 
-// newTask('wash up','2022-02-02');
-
-async function newFruit(fruit,price,colour){
-    let beta = new Fruit({
-        fruit,
-        price,
-        colour
-    })
-    beta = await beta.save();
-    console.log(beta)
-    }
-
-// newFruit('banana',136,'yellow');
-
-// app.get('/',(req,res) => {
-//     let task = 'eat apples';
-//     let date = 202022;
-
-//     res.render('list',{
-//         task:task,
-//         date:date
-//     });
-// })
-
-// read tasks
-app.get('/',(req,res) => {
-    Task.find({}, function(err, tasks){
-        res.render('list',{
-        tasks:tasks
-    });        
-    })
+//create user
+const userSchema = mongoose.Schema({
+    username:{type:String, required:true},
+    password:{type:String, required:true},
+    acc:{type:String, required:true}
 })
 
-//write task
-app.post('/', async (req,res) => {
-    let alpha = new Task({
-        task: req.body.task,
-        date: req.body.date
+const User = mongoose.model('users',userSchema);
+
+async function newUser(username,pass,acc){
+    const salt = await bcrypt.genSalt(10);
+    password = await bcrypt.hash(pass,salt)
+    let alpha = new User({
+        username,
+        password,
+        acc
     })
     alpha = await alpha.save();
     console.log(alpha);
-    res.redirect('/')
-})
+}
 
+// newUser('joco','lolo','user');
 
-//delete task
-// app.get('/:id', async (req,res)=>{
-//     let obs = await Task.findById(req.params.id)
-//     if(!obs) res.status(404).send('no no no');
-//     res.send('this is the' + obs);
-//     console.log(obs);
-// })
-
-
-
-app.delete('/:id', async (req,res)=>{
-    // let obs = await Task.find({task:req.params.id})
-    // console.log(obs);
-    let obs = await Task.findByIdAndDelete(req.params.id);
-    console.log(obs);
-    res.redirect('/');
-})
-
-app.listen(2525, ()=>{
+app.listen(2525, () => {
     console.log('listening on port 2525');
 });
