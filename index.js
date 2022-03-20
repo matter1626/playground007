@@ -133,8 +133,6 @@ async function newUser(username,pass,acc){
     console.log(alpha);
 }
 
-newUser('bobo','blue','admin');
-
 app.listen(2525, () => {
     console.log('listening on port 2525');
 });
