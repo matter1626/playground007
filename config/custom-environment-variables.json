@@ -1,3 +1,5 @@
 {
-    "jwtprivatekey":"hahaha"
+    "jwtprivatekey":"hahaha",
+    "mogouser":"cus_user",
+    "mogopass":"cus_pass"
 }

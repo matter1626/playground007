@@ -25,7 +25,11 @@ app.use('/protected', (req,res,next) => {
     next();
 })
 
-mongoose.connect('mongodb://localhost/todo', { useNewUrlParser: true, useUnifiedTopology: true })
+// mongoose.connect('mongodb://localhost/todo', { useNewUrlParser: true, useUnifiedTopology: true })
+//   .then(() => console.log('Connected to MongoDB...'))
+//   .catch(err => console.error('Could not connect to MongoDB...', err));
+
+mongoose.connect(`mongodb://${config.get('mogouser')}:${config.get('mogopass')}@52.14.207.35:27017/admin`,{ useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB...'))
   .catch(err => console.error('Could not connect to MongoDB...', err));
 
@@ -45,7 +49,7 @@ app.post('/login', async (req,res)=>{
     if(check == false) res.send('password is incorrect');
     
     const payload = _.pick(user[0], ['username', 'acc']);
-    const token = jwt.sign(payload,'privatekey');
+    const token = jwt.sign(payload,config.get('jwtprivatekey'));
     res.cookie('x-token', token);
     res.redirect('/home');
 })
@@ -53,7 +57,7 @@ app.post('/login', async (req,res)=>{
 //write task
 app.get('/home',(req,res) => {
     let token = req.cookies['x-token'];
-    let decode = jwt.verify(token,'privatekey');
+    let decode = jwt.verify(token,config.get('jwtprivatekey'));
     console.log(decode.acc);
 
     if(decode.acc ==='admin'){
@@ -129,7 +133,7 @@ async function newUser(username,pass,acc){
     console.log(alpha);
 }
 
-// newUser('joco','lolo','user');
+newUser('bobo','blue','admin');
 
 app.listen(2525, () => {
     console.log('listening on port 2525');
